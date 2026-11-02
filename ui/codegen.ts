@@ -1,7 +1,9 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-  schema: '../../../backend/gateway/generated/schema.graphql',
+  // Snapshot of the composed erxes gateway schema; refresh it with
+  // `pnpm schema:update` (see README).
+  schema: 'schema.graphql',
   documents: ['src/**/*.{ts,tsx}', '!src/gql/**'],
   generates: {
     'src/gql/': {

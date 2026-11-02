@@ -1,0 +1,87 @@
+name: Release
+
+# Same contract as the erxes monorepo release: pushing an `X.Y.Z` tag (or a
+# manual run) freezes what is currently on `latest` under that version.
+# - API image: erxes/erxes-next-operation_api:latest -> :X.Y.Z
+# - UI: s3://erxes-next/latest/operation_ui/ -> s3://erxes-next/X.Y.Z/operation_ui/
+#   (servers load plugins.erxes.io/<version>/operation_ui/)
+# Release with the same version as erxes so the plugin matches the platform.
+
+on:
+  push:
+    tags:
+      - '[0-9]*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 3.4.1)'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.inputs.version || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  VERSION: ${{ github.event.inputs.version || github.ref_name }}
+  IMAGE: erxes/erxes-next-operation_api
+  UI: operation_ui
+
+jobs:
+  check:
+    name: Check the version
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]] \
+            || { echo "::error::Version must look like 3.4.1, got '$VERSION'"; exit 1; }
+
+  tag-docker-image:
+    name: Tag the API image
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag $IMAGE
+        run: |
+          docker buildx imagetools create -t "$IMAGE:$VERSION" "$IMAGE:latest"
+          docker buildx imagetools inspect "$IMAGE:$VERSION" >/dev/null
+
+  publish-ui:
+    name: Publish the UI
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      R2: https://7c8392aff8ac4518aa06dfa4b6337ef2.r2.cloudflarestorage.com
+    steps:
+      - name: Copy the latest/ build to the release folder
+        run: |
+          set -euo pipefail
+          if ! aws s3 ls "s3://erxes-next/latest/$UI/remoteEntry.js" --endpoint-url "$R2" >/dev/null; then
+            echo "::error::$UI has no latest/ build to release"
+            exit 1
+          fi
+          aws configure set default.s3.max_concurrent_requests 64
+          # Download and re-upload instead of a server-side copy: R2 rejects the tagging
+          # calls/headers that `aws s3` copies send (GetObjectTagging, x-amz-tagging-directive).
+          aws s3 sync "s3://erxes-next/latest/$UI/" "ui/$UI/" --only-show-errors --endpoint-url "$R2"
+          aws s3 sync "ui/$UI/" "s3://erxes-next/$VERSION/$UI/" --only-show-errors --endpoint-url "$R2"
+          aws s3 cp "ui/$UI/remoteEntry.js" "s3://erxes-next/$VERSION/$UI/remoteEntry.js" \
+            --cache-control "no-cache" --content-type "application/javascript" \
+            --only-show-errors --endpoint-url "$R2"
+          aws s3 ls "s3://erxes-next/$VERSION/$UI/remoteEntry.js" --endpoint-url "$R2" >/dev/null
+          echo "published $VERSION/$UI"

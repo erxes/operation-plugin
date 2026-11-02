@@ -5,7 +5,7 @@
 - **Plugin:** `operation`
 - **Project:** `operation_api`
 - **Layer:** `Backend API`
-- **Path:** `backend/plugins/operation_api`
+- **Path:** `api`
 - **Last synchronized:** `2026-10-27`
 
 ## Scope
@@ -241,7 +241,7 @@ propertiesData? } })`
 - `pnpm nx run operation_api:schema:print` - writes `generated/schema.graphql`.
 - `pnpm nx lint operation_api` - runs ESLint with the plugin-local
   `eslint.config.js` (regex-escaping rules).
-- `npx tsc --noEmit -p backend/plugins/operation_api/tsconfig.json` - expect
+- `npx tsc --noEmit -p api/tsconfig.json` - expect
   no errors.
 - `pnpm nx build operation_api` - its type-declaration step can exhaust the
   default Node heap; run with `NODE_OPTIONS=--max-old-space-size=8192`.

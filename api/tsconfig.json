@@ -1,5 +1,5 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "module": "commonjs",
@@ -23,17 +23,32 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
-    "types": ["jest", "node"],
+    "types": [
+      "jest",
+      "node"
+    ],
     "paths": {
-      "~/*": ["./src/*"],
-      "@/*": ["./src/modules/*"],
-      "erxes-api-shared/*": ["../../erxes-api-shared/src/*"]
+      "~/*": [
+        "./src/*"
+      ],
+      "@/*": [
+        "./src/modules/*"
+      ]
     }
   },
   "ts-node": {
     "files": true,
-    "require": ["tsconfig-paths/register"]
+    "require": [
+      "tsconfig-paths/register"
+    ]
   },
-  "exclude": ["dist", "frontend/**/*"],
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/apollo/subscription.js"]
+  "exclude": [
+    "dist",
+    "frontend/**/*"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/apollo/subscription.js"
+  ]
 }

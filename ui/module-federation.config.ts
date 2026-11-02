@@ -34,6 +34,20 @@ const config: ModuleFederationConfig = {
     // Returning false means the library is not shared.
     return false;
   },
+
+  // Nx reads shared versions from the root package.json, which in this
+  // standalone repo lists none of the core libraries, so it would share none
+  // and the remote would run its own React ("reading 'useCallback'"). Share
+  // them explicitly as singletons consumed from the host (no fallback copy).
+  additionalShared: [...coreLibraries].map((libraryName) => ({
+    libraryName,
+    sharedConfig: {
+      singleton: true,
+      strictVersion: false,
+      requiredVersion: false,
+      import: false,
+    },
+  })),
 };
 
 export default config;

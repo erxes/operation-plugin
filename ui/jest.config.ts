@@ -1,11 +1,15 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 export default {
-  displayName: 'operation-ui',
-  preset: '../../../jest.preset.js',
-  testEnvironment: 'node',
+  displayName: 'operation_ui',
+  testEnvironment: 'jsdom',
   transform: {
-    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
+    '^.+\\.[tj]sx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json', diagnostics: false }],
   },
-  moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/plugins/operation_ui',
+  moduleNameMapper: {
+    '^~/(.*)$': '<rootDir>/src/$1',
+    '^@/(.*)$': '<rootDir>/src/modules/$1',
+  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'html'],
+  roots: ['<rootDir>/src'],
+  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
+  coverageDirectory: '../coverage/ui',
 };

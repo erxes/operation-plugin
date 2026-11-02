@@ -1,7 +1,7 @@
 {
   "name": "operation_api",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "backend/plugins/operation_api/src",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "api/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -9,50 +9,47 @@
       "executor": "nx:run-commands",
       "cache": true,
       "options": {
-        "cwd": "backend/plugins/operation_api",
+        "cwd": "api",
         "commands": [
           "pnpm build"
         ]
-      },
-      "dependsOn": [
-        "^build",
-        "build:packageJson"
-      ]
-    },
-    "build:packageJson": {
-      "executor": "@nx/js:tsc",
-      "options": {
-        "main": "backend/plugins/operation_api/dist/src/main.js",
-        "tsConfig": "backend/plugins/operation_api/tsconfig.build.json",
-        "outputPath": "backend/plugins/operation_api/dist",
-        "updateBuildableProjectDepsInPackageJson": true,
-        "buildableProjectDepsInPackageJsonType": "dependencies"
       }
     },
     "start": {
       "executor": "nx:run-commands",
       "dependsOn": [
-        "typecheck",
         "build"
       ],
       "options": {
-        "cwd": "backend/plugins/operation_api",
+        "cwd": "api",
         "command": "NODE_ENV=development node dist/src/main.js"
       }
     },
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "backend/plugins/operation_api",
+        "cwd": "api",
         "command": "NODE_ENV=development pnpm dev"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "api",
+        "command": "pnpm exec jest --config jest.config.ts --runInBand --passWithNoTests"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec eslint api"
       }
     },
     "docker-build": {
       "dependsOn": [
         "build"
       ],
-      "command": "docker build -f backend/plugins/operation_api/Dockerfile . -t erxes/erxes-next-operation_api"
-    },
-    "schema:print": {}
+      "command": "docker build -f api/Dockerfile . -t erxes/erxes-next-operation_api"
+    }
   }
 }

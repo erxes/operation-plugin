@@ -1,0 +1,39 @@
+{
+  "name": "operation-plugin",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev:api": "pnpm --filter operation_api dev",
+    "dev:ui": "pnpm exec nx serve operation_ui",
+    "build": "pnpm --filter operation_api build && pnpm exec nx build operation_ui",
+    "build:api": "pnpm --filter operation_api build",
+    "build:ui": "pnpm exec nx build operation_ui",
+    "codegen": "pnpm exec nx run operation_ui:codegen",
+    "schema:update": "cp \"${ERXES_DIR:-../erxes}/backend/gateway/generated/schema.graphql\" ui/schema.graphql",
+    "test": "pnpm --filter operation_api test && pnpm exec nx test operation_ui",
+    "lint": "pnpm exec eslint api/src ui/src"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^7.4.3",
+    "@graphql-codegen/client-preset": "^6.2.0",
+    "@nx/react": "20.0.8",
+    "@nx/rspack": "20.0.8",
+    "@rspack/core": "1.0.5",
+    "@testing-library/react": "15.0.6",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^9.9.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
+    "nx": "20.0.8",
+    "ts-jest": "^29.1.0",
+    "ts-node": "10.9.1",
+    "tslib": "^2.8.1",
+    "typescript": "5.7.3",
+    "typescript-eslint": "^8.0.0"
+  },
+  "packageManager": "pnpm@9.12.3"
+}

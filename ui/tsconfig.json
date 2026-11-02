@@ -5,15 +5,14 @@
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "baseUrl": ".",
     "paths": {
-      "erxes-ui": ["frontend/libs/erxes-ui/src"],
-      "erxes-ui/*": ["frontend/libs/erxes-ui/src/*"],
-      "@/*": ["frontend/plugins/operation_ui/src/modules/*"],
-      "@": ["frontend/plugins/operation_ui/src/modules"],
-      "~/*": ["frontend/plugins/operation_ui/src/*"],
-      "~": ["frontend/plugins/operation_ui/src"],
-      "ui-modules": ["frontend/libs/ui-modules/src"],
-      "ui-modules/*": ["frontend/libs/ui-modules/src/*"]
+      "~/*": ["./src/*"],
+      "~": ["./src"],
+      "@/*": ["./src/modules/*"],
+      "@": ["./src/modules"]
     }
   },
   "files": [],
@@ -26,5 +25,5 @@
       "path": "./tsconfig.spec.json"
     }
   ],
-  "extends": "../../../tsconfig.base.json"
+  "extends": "../tsconfig.base.json"
 }

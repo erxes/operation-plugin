@@ -1,0 +1,8 @@
+# Build context for api/Dockerfile: only api/package.json and api/dist (built
+# by CI before docker build) are used.
+# Host node_modules hold pnpm symlinks into this plugin's store and break the
+# image.
+**/node_modules
+**/dist
+!api/dist
+ui
